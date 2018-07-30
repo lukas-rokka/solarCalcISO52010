@@ -1,0 +1,15 @@
+Package: solarCalcISO52010
+Type: Package
+Title: Calc
+Version: 1.0
+Date: 2018-07-23
+Author: Lukas Lundstrom
+Maintainer: Lukas Lundstrom <lukas.rokka@gmail.com>
+Description: Solar irradiance on a surface with arbitrary orientation and tilt, 
+    calculated according to ISO 52010-1:2017.
+License: GPL (>= 3)
+Encoding: UTF-8
+Imports: Rcpp (>= 0.12.18)
+LinkingTo: Rcpp
+RoxygenNote: 6.1.0
+Suggests: testthat

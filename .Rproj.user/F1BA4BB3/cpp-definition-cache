@@ -1,0 +1,26 @@
+[
+    {
+        "definitions" : [
+            {
+                "column" : 6,
+                "file" : "C:/Dropbox/Projects/SmartEnergyModeler/code/solarCalcISO52010/src/iso52010.cpp",
+                "kind" : 6,
+                "line" : 8,
+                "name" : "interp_f(double, double (&)[2][3], int)",
+                "parent_name" : "",
+                "usr" : "c:@F@interp_f#d#& #I#"
+            },
+            {
+                "column" : 15,
+                "file" : "C:/Dropbox/Projects/SmartEnergyModeler/code/solarCalcISO52010/src/iso52010.cpp",
+                "kind" : 6,
+                "line" : 108,
+                "name" : "rcpp_ISO52010(double, double, double, double, NumericVector, NumericVector, NumericVector, NumericVector, NumericVector, NumericVector, NumericVector, int)",
+                "parent_name" : "",
+                "usr" : "c:@F@rcpp_ISO52010#d#d#d#d#$@N@Rcpp@C@Vector>#VI14#@N@Rcpp@CT>1#T@PreserveStorage#S0_#S0_#S0_#S0_#S0_#S0_#I#"
+            }
+        ],
+        "file" : "C:/Dropbox/Projects/SmartEnergyModeler/code/solarCalcISO52010/src/iso52010.cpp",
+        "file_last_write" : 1532872981
+    }
+]

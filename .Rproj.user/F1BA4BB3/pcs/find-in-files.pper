@@ -1,0 +1,10 @@
+{
+    "dialog-state" : {
+        "caseSensitive" : false,
+        "filePatterns" : [
+        ],
+        "path" : "C:/Dropbox/Projects/SmartEnergyModeler/code/solarCalcISO52010",
+        "query" : "%>%",
+        "regex" : false
+    }
+}

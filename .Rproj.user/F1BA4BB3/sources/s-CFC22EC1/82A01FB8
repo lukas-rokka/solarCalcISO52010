@@ -1,0 +1,23 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1532432247328.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "82A01FB8",
+    "lastKnownWriteTime" : 1532872876,
+    "last_content_update" : 1532872876927,
+    "path" : "C:/Dropbox/Projects/SmartEnergyModeler/code/solarCalcISO52010/R/solarCalcISO52010.R",
+    "project_path" : "R/solarCalcISO52010.R",
+    "properties" : {
+        "cursorPosition" : "10,4",
+        "scrollLine" : "0",
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 8,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
