@@ -1,6 +1,6 @@
 Package: solarCalcISO52010
 Type: Package
-Title: Calc
+Title: Calculate solar irradiance on a surface with arbitrary orientation and tilt
 Version: 1.0
 Date: 2018-07-23
 Author: Lukas Lundstrom

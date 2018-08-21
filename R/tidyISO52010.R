@@ -73,7 +73,7 @@ tidyISO52010 <- function(
 add_dayOfYear_hourOfDay <- function(.df, col_timestamp="timestamp") {
   if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df")
   if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
-  timestamp <- .df[ , col_timestamp] - 1 
+  timestamp <- .df[ , col_timestamp][[1]] - 1 
   .df$n_day = as.integer(format(timestamp, "%j"))
   .df$n_hour = as.numeric(format(timestamp, "%H")) + as.numeric(format(timestamp, "%M"))/60 + 1/60
   .df
