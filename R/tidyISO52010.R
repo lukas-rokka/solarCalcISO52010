@@ -36,7 +36,7 @@ tidyISO52010 <- function(
   if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
   if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df" )
   if (is.null(albedo) && !exists(col_albedo, .df)) stop("Either .df need an \"albedo\" column or the albedo need to be specified with the albedo argument")
-  if (length(surfaceAzimuths)!=length(surfaceAzimuths)) stop("Arguments surfaceAzimuths and surfaceAzimuths need to be of same length ")
+  if (length(surfaceAzimuths)!=length(surfaceTilts)) stop("Arguments surfaceAzimuths and surfaceAzimuths need to be of same length ")
   
   .df <- as.data.frame(.df)
   .df <- add_dayOfYear_hourOfDay(.df)
