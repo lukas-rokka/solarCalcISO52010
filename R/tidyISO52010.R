@@ -41,9 +41,13 @@ tidyISO52010 <- function(
   .df <- as.data.frame(.df)
   .df <- add_dayOfYear_hourOfDay(.df)
   if (!is.null(albedo)) .df[ , col_albedo] <- albedo
-  if (is.null(t_shift)) t_shift <- (.df$n_hour[2] - .df$n_hour[1]) / 2
+  if (is.null(t_shift)) {
+    t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
+    message(paste0("Using time shift: ", t_shift))
+  }
   
-  # converti degrees to radians
+  
+  # convert degrees to radians
   surfaceAzimuths <- surfaceAzimuths*pi/180
   surfaceTilts<- surfaceTilts*pi/180
   
