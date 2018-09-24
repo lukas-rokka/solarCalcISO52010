@@ -43,7 +43,7 @@ tidyISO52010 <- function(
   if (!is.null(albedo)) .df[ , col_albedo] <- albedo
   if (is.null(t_shift)) {
     t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
-    message(paste0("Using time shift: ", t_shift))
+    message(paste0("t_shift: ", t_shift))
   }
   
   
