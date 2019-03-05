@@ -1,3 +1,5 @@
+// Copyright (C) 2019 Lukas Lundström
+
 #include <Rcpp.h>
 using namespace Rcpp;
 

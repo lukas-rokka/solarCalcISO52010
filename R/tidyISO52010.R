@@ -1,3 +1,5 @@
+# Copyright (C) 2019 Lukas Lundström
+
 #' @title Tidy version of the ISO 52010-1:2017 solar irradiance calculation
 #' @description adds columns n_day and n_hour to .df
 #' @param .df Data frame that holds the solar irradiance data
