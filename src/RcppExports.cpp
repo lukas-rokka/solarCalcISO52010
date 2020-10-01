@@ -27,9 +27,26 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// rcpp_ISO52010_angles
+NumericMatrix rcpp_ISO52010_angles(double lat, double lng, double tz, double t_shift, NumericVector n_hour, NumericVector n_day);
+RcppExport SEXP _solarCalcISO52010_rcpp_ISO52010_angles(SEXP latSEXP, SEXP lngSEXP, SEXP tzSEXP, SEXP t_shiftSEXP, SEXP n_hourSEXP, SEXP n_daySEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< double >::type lat(latSEXP);
+    Rcpp::traits::input_parameter< double >::type lng(lngSEXP);
+    Rcpp::traits::input_parameter< double >::type tz(tzSEXP);
+    Rcpp::traits::input_parameter< double >::type t_shift(t_shiftSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type n_hour(n_hourSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type n_day(n_daySEXP);
+    rcpp_result_gen = Rcpp::wrap(rcpp_ISO52010_angles(lat, lng, tz, t_shift, n_hour, n_day));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_solarCalcISO52010_rcpp_ISO52010", (DL_FUNC) &_solarCalcISO52010_rcpp_ISO52010, 12},
+    {"_solarCalcISO52010_rcpp_ISO52010_angles", (DL_FUNC) &_solarCalcISO52010_rcpp_ISO52010_angles, 6},
     {NULL, NULL, 0}
 };
 

@@ -94,7 +94,7 @@ NumericMatrix test_interp(double eps, int interp) {
 //' If the timestamp 12:00 refer to interval 11:45 - 12:15, use t_shift = 0.0. 
 //' If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.
 //' @param surfaceAzimuths Vector of surface azimuths, in radians
-//' @param surfaceTilts Vector of surface tilts, in radians. Need to be same lenght as surfaceAzimuths
+//' @param surfaceTilts Vector of surface tilts, in radians. Need to be same length as surfaceAzimuths
 //' @param n_hour Vector representing the hour of the day for every time step (double 0-24)
 //' @param n_day Vector representing the day of the year for every time step (integer 1-366)
 //' @param G_dir Vector of direct normal irradiance, W/m2
@@ -190,7 +190,8 @@ NumericMatrix rcpp_ISO52010(double lat, double lng, double tz, double t_shift,
     double cos_fai_1 = (cos_lat*sin_delta + sin_lat*cos_delta*cos(PI-H)) / fai_0;
     
     // ISO52010:2017 eq 15: auxiliary variable
-    double fai_2 = asin(cos_delta*sin(PI-H)) / fai_0;
+    // double fai_2 = asin(cos_delta*sin(PI-H)) / fai_0; see https://github.com/kristss/solarCalcISO52010/commit/afc7cd20f4dda3f975c3caf9893ab393dd5f7d22
+    double fai_2 = asin((cos_delta*sin(PI-H)) / fai_0)
     
     // ISO52010:2017 eq 16: the solar azimuth angle
     if ((sin_fai_1 >= 0.0) & (cos_fai_1 > 0.0)) {
@@ -289,3 +290,107 @@ NumericMatrix rcpp_ISO52010(double lat, double lng, double tz, double t_shift,
   return I_tot;
 }
 
+//' @title ISO 52010-1:2017 solar altitude and azimuth
+//' 
+//' @description Calculate solar altitude and azimuth
+//' 
+//' @param lat Latitude, in radians
+//' @param lng Longitude, in radians
+//' @param tz Time zone of the irradiance data, in hours. E.g. +1 for central European 
+//' (UTC+1) time zones. Use 0, if data is recorded in UTC time.
+//' @param t_shift Decimal hours to shift timestamps with. E.g. timestamp 12:00 usually refer to the
+//' solar irradaince during time interval 11:00 - 12:00, then use t_shift = 0.5. 
+//' If the timestamp 12:00 refer to interval 11:45 - 12:15, use t_shift = 0.0. 
+//' If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.
+//' @param n_hour Vector representing the hour of the day for every time step (double 0-24)
+//' @param n_day Vector representing the day of the year for every time step (integer 1-366)
+//' @return A matrix where first column holds the solar altitude for each time step and second column holds solar azimuth angle
+//' @export 
+// [[Rcpp::export]]
+NumericMatrix rcpp_ISO52010_angles(double lat, double lng, double tz, double t_shift, 
+                                 NumericVector n_hour, NumericVector n_day) {
+  
+  // local meridian in rad. - for west & + for east of the prime meridian.
+  
+  int n = n_hour.size();
+  
+  double t_eq;
+  double cos_lat = cos(lat);
+  double sin_lat = sin(lat);
+  double fai;
+  NumericMatrix ret(n, 2);
+  
+  for (int i=0; i < n; i++) {
+    
+    // ISO52010:2017 eq 2: earth orbit deviation as a function of the day, in radians
+    double R_dc = 2.0*PI*n_day[i]/365.0;
+    
+    // ISO52010:2017 eq 1: solar declination, in radians
+    double delta = (0.33281 - 22.984*cos(R_dc) - 0.3499*cos(2*R_dc) - 0.1398*cos(3*R_dc) + 3.7872*sin(R_dc) + 0.03205*sin(2*R_dc) + 0.07187*sin(3*R_dc))*PI/180;
+    double sin_delta = sin(delta);  // calc once
+    double cos_delta = cos(delta);  // calc once
+    
+    // ISO52010:2017 eq 3-7: the equations of time
+    if (n_day[i] < 21) {
+      t_eq = 2.6 + 0.44*n_day[i];
+    } else if (n_day[i] < 136) {
+      t_eq = 5.2 + 9.0*cos((n_day[i] - 43)*0.0357);
+    } else if (n_day[i] < 241) {
+      t_eq = 1.4 - 5.0*cos((n_day[i] - 135)*0.0449);
+    } else if (n_day[i] < 336) {
+      t_eq = -6.3 - 10.0*cos((n_day[i] - 306)*0.036);
+    } else {
+      t_eq = 0.45*(n_day[i] - 359);
+    }
+    
+    // ISO52010:2017 eq 8: The time shift, i hours. 15 degrees ~ 0.2618 rad
+    double t_shift2 = tz - lng/0.2618;
+    
+    // ISO52010:2017 eq 9: The solar time
+    double t_sol = n_hour[i] - t_eq / 60.0 - t_shift2;
+    
+    // ISO52010:2017 eq 10: solar hour angle in radians. 
+    // NOTE: standard use 12 + 0.5 to shift to middle of full hour. Here t_shift is added instead, 
+    // e.g. use t_shift=0.5 for hourly interval data and t_shift=0.125 for 15 min data. 
+    // NOTE: 0:xx o'clock should be converted to 24:xx o'clock
+    double H = 15 * (12 + t_shift - t_sol) * PI / 180.0;
+    double cos_H = cos(H);  
+    
+    // fixes H between -180 and 180 degree (can be skipped if no sunshine at midnight is expected,
+    // or 0 o'clock is denoted as the 24th hour of the day before)
+    if (H > PI) H = H - 2*PI;
+    else if (H < -PI) H = H + 2*PI;
+    
+    // ISO52010:2017 eq 11: Calculate solar altitude angle in radians.
+    double alfa = asin(sin_delta*sin_lat + cos_delta*cos_lat*cos_H);
+    if (alfa < 0.0001) alfa = 0;
+    
+    // ISO52010:2017 eq 12: the solar zenith angle
+    double theta_z = PI/2 - alfa;
+    
+    // calc once
+    double fai_0 = cos(asin(sin(alfa)));
+    
+    // ISO52010:2017 eq 13: auxiliary variable
+    double sin_fai_1 = cos_delta * sin(H) / fai_0;
+    
+    // ISO52010:2017 eq 14: auxiliary variable
+    double cos_fai_1 = (cos_lat*sin_delta + sin_lat*cos_delta*cos(PI-H)) / fai_0;
+    
+    // ISO52010:2017 eq 15: auxiliary variable
+    // double fai_2 = asin(cos_delta*sin(PI-H)) / fai_0; see https://github.com/kristss/solarCalcISO52010/commit/afc7cd20f4dda3f975c3caf9893ab393dd5f7d22
+    double fai_2 = asin((cos_delta*sin(PI-H)) / fai_0);
+    
+    // ISO52010:2017 eq 16: the solar azimuth angle
+    if ((sin_fai_1 >= 0.0) & (cos_fai_1 > 0.0)) {
+      fai = (PI - fai_2);
+    } else if (cos_fai_1 < 0.0 ) {
+      fai = fai_2;
+    } else {
+      fai = -(PI + fai_2);
+    }
+    ret(i, 0) = alfa;
+    ret(i, 1) = fai;
+  }
+  return ret;
+}
