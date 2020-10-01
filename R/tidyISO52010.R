@@ -35,16 +35,15 @@ tidyISO52010 <- function(
   if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df" )
   if (!exists(col_G_dir, .df)) stop("Column  \"", col_G_dir, "\" doesn't exist in .df" )
   if (!exists(col_G_dif, .df)) stop("Column  \"", col_G_dif, "\" doesn't exist in .df" )
-  if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
-  if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df" )
+  if (!inherits(.df[[col_timestamp]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
   if (is.null(albedo) && !exists(col_albedo, .df)) stop("Either .df need an \"albedo\" column or the albedo need to be specified with the albedo argument")
   if (length(surfaceAzimuths)!=length(surfaceTilts)) stop("Arguments surfaceAzimuths and surfaceAzimuths need to be of same length ")
   
-  .df <- as.data.frame(.df)
+  #.df <- as.data.frame(.df)
   .df <- add_dayOfYear_hourOfDay(.df, col_timestamp)
   if (!is.null(albedo)) .df[ , col_albedo] <- albedo
   if (is.null(t_shift)) {
-    t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
+    t_shift <- diff(as.numeric(.df[[col_timestamp]][1:2])/3600) / 2 
     message(paste0("t_shift: ", t_shift))
   }
   
@@ -54,18 +53,18 @@ tidyISO52010 <- function(
   surfaceTilts<- surfaceTilts*pi/180
   
   res <- rcpp_ISO52010(
-    lat=lat*pi/180, lng=lng*pi/180, tz=tz, t_shift=t_shift,
+    lat = lat*pi/180, lng = lng*pi/180, tz = tz, t_shift = t_shift,
     surfaceAzimuths = surfaceAzimuths, surfaceTilts = surfaceTilts, # north, west, south, east
-    n_day=.df$n_day, n_hour=.df$n_hour, 
-    G_dir=as.vector(.df[, col_G_dir]), G_dif=as.vector(.df[, col_G_dif]), 
-    albedo=as.vector(.df[, col_albedo]), interp_perez=interp_perez
+    n_day = .df$n_day, n_hour = .df$n_hour, 
+    G_dir = as.vector(.df[, col_G_dir]), G_dif = as.vector(.df[, col_G_dif]), 
+    albedo = as.vector(.df[, col_albedo]), interp_perez = interp_perez
   )
   
   .df$alpha_sol <- res[,1]
   N <- length(surfaceAzimuths)
   for (n in 1:N) {
-    .df[ , paste0("I_tot_dir_s", n)] = res[,n+1]
-    .df[ , paste0("I_tot_dif_s", n)] = res[,N+n+1]
+    .df[[paste0("I_tot_dir_s", n)]] = res[, n+1]
+    .df[[paste0("I_tot_dif_s", n)]] = res[, N+n+1]
   }
   .df
 }
@@ -79,8 +78,8 @@ tidyISO52010 <- function(
 #' n_hour is the hour of the day, an decimal between 0.01667 - 24
 add_dayOfYear_hourOfDay <- function(.df, col_timestamp="timestamp") {
   if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df")
-  if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
-  timestamp <- (.df[ , col_timestamp]) - 1 
+  if (!inherits(.df[[col_timestamp]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
+  timestamp <- .df[[col_timestamp]] - 1 
   .df$n_day = as.integer(format(timestamp, "%j"))
   .df$n_hour = as.numeric(format(timestamp, "%H")) + as.numeric(format(timestamp, "%M"))/60 + 1/60
   .df
@@ -105,12 +104,12 @@ tidyISO52010_angles <- function(
   
   if (!inherits(.df, "data.frame")) stop("First argument, \".df\", need to inherit from data.frame class")
   if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df" )
-  if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
+  if (!inherits(.df[[col_timestamp]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
   
-  .df <- as.data.frame(.df)
+  #.df <- as.data.frame(.df)
   .df <- add_dayOfYear_hourOfDay(.df, col_timestamp)
   if (is.null(t_shift)) {
-    t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
+    t_shift <- diff(as.numeric(.df[[col_timestamp]][1:2])/3600) / 2 
     message(paste0("t_shift: ", t_shift))
   }
   
@@ -118,8 +117,8 @@ tidyISO52010_angles <- function(
     lat = lat*pi/180, lng = lng*pi/180, tz = tz, t_shift = t_shift,
     n_day = .df$n_day, n_hour = .df$n_hour)
 
-  .df$alpha_sol <- res[,1]
-  .df$azimuth_sol <- res[,2]
+  .df[["alpha_sol"]] <- res[,1]
+  .df[["azimuth_sol"]] <- res[,2]
   
   .df
 }
