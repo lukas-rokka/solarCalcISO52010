@@ -14,7 +14,7 @@
 #' If the timestamp 12:00 refer to interval 11:45 - 12:15, use t_shift = 0.0. 
 #' If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.
 #' @param surfaceAzimuths Vector of surface azimuths, in radians
-#' @param surfaceTilts Vector of surface tilts, in radians. Need to be same lenght as surfaceAzimuths
+#' @param surfaceTilts Vector of surface tilts, in radians. Need to be same length as surfaceAzimuths
 #' @param n_hour Vector representing the hour of the day for every time step (double 0-24)
 #' @param n_day Vector representing the day of the year for every time step (integer 1-366)
 #' @param G_dir Vector of direct normal irradiance, W/m2
@@ -28,5 +28,25 @@
 #' @export 
 rcpp_ISO52010 <- function(lat, lng, tz, t_shift, surfaceAzimuths, surfaceTilts, n_hour, n_day, G_dir, G_dif, albedo, interp_perez) {
     .Call(`_solarCalcISO52010_rcpp_ISO52010`, lat, lng, tz, t_shift, surfaceAzimuths, surfaceTilts, n_hour, n_day, G_dir, G_dif, albedo, interp_perez)
+}
+
+#' @title ISO 52010-1:2017 solar altitude and azimuth
+#' 
+#' @description Calculate solar altitude and azimuth
+#' 
+#' @param lat Latitude, in radians
+#' @param lng Longitude, in radians
+#' @param tz Time zone of the irradiance data, in hours. E.g. +1 for central European 
+#' (UTC+1) time zones. Use 0, if data is recorded in UTC time.
+#' @param t_shift Decimal hours to shift timestamps with. E.g. timestamp 12:00 usually refer to the
+#' solar irradaince during time interval 11:00 - 12:00, then use t_shift = 0.5. 
+#' If the timestamp 12:00 refer to interval 11:45 - 12:15, use t_shift = 0.0. 
+#' If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.
+#' @param n_hour Vector representing the hour of the day for every time step (double 0-24)
+#' @param n_day Vector representing the day of the year for every time step (integer 1-366)
+#' @return A matrix where first column holds the solar altitude for each time step and second column holds solar azimuth angle
+#' @export 
+rcpp_ISO52010_angles <- function(lat, lng, tz, t_shift, n_hour, n_day) {
+    .Call(`_solarCalcISO52010_rcpp_ISO52010_angles`, lat, lng, tz, t_shift, n_hour, n_day)
 }
 

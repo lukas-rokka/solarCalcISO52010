@@ -1,7 +1,7 @@
 # Copyright (C) 2019 Lukas Lundström
 
 #' @title Tidy version of the ISO 52010-1:2017 solar irradiance calculation
-#' @description adds columns n_day and n_hour to .df
+#' @description Tidy version of the ISO 52010-1:2017 solar irradiance calculation
 #' @param .df Data frame that holds the solar irradiance data
 #' @param lat Latitude, in decimal degrees
 #' @param lng Longitude, in decimal degrees
@@ -41,7 +41,7 @@ tidyISO52010 <- function(
   if (length(surfaceAzimuths)!=length(surfaceTilts)) stop("Arguments surfaceAzimuths and surfaceAzimuths need to be of same length ")
   
   .df <- as.data.frame(.df)
-  .df <- add_dayOfYear_hourOfDay(.df)
+  .df <- add_dayOfYear_hourOfDay(.df, col_timestamp)
   if (!is.null(albedo)) .df[ , col_albedo] <- albedo
   if (is.null(t_shift)) {
     t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
@@ -83,5 +83,43 @@ add_dayOfYear_hourOfDay <- function(.df, col_timestamp="timestamp") {
   timestamp <- (.df[ , col_timestamp]) - 1 
   .df$n_day = as.integer(format(timestamp, "%j"))
   .df$n_hour = as.numeric(format(timestamp, "%H")) + as.numeric(format(timestamp, "%M"))/60 + 1/60
+  .df
+}
+
+#' @title Tidy version of the ISO 52010-1:2017 solar altitude and azimuth calculation
+#' @description adds columns n_day and n_hour to .df
+#' @param .df Data frame that holds the solar irradiance data
+#' @param lat Latitude, in decimal degrees
+#' @param lng Longitude, in decimal degrees
+#' @param tz Time zone of the irradiance data, in hours. E.g. +1 for central European
+#' (UTC+1) time zones. Use 0, if data is recorded in UTC time.
+#' @param t_shift Decimal hours to shift timestamps with. E.g. timestamp 12:00 usually refer to the
+#' solar irradaince during time interval 11:00 - 12:00, then use t_shift = 0.5. 
+#' If the timestamp 12:00 refer to interval 11:45 - 12:15, use t_shift = 0.0. 
+#' If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.
+#' If t_shift is NULL, it is estimated as (n_hour[2] - n_hour[1])/2. 
+#' @export
+tidyISO52010_angles <- function(
+  .df, lat, lng, tz, t_shift = NULL, 
+  col_timestamp = "timestamp") {
+  
+  if (!inherits(.df, "data.frame")) stop("First argument, \".df\", need to inherit from data.frame class")
+  if (!exists(col_timestamp, .df)) stop("Column  \"", col_timestamp, "\" doesn't exist in .df" )
+  if (!inherits(.df[, col_timestamp][[1]], "POSIXt")) stop("Column \"", col_timestamp, "\" need to inherit from POSIXt class")
+  
+  .df <- as.data.frame(.df)
+  .df <- add_dayOfYear_hourOfDay(.df, col_timestamp)
+  if (is.null(t_shift)) {
+    t_shift <- diff(as.numeric(.df[1:2, col_timestamp])/3600) / 2 
+    message(paste0("t_shift: ", t_shift))
+  }
+  
+  res <- rcpp_ISO52010_angles(
+    lat = lat*pi/180, lng = lng*pi/180, tz = tz, t_shift = t_shift,
+    n_day = .df$n_day, n_hour = .df$n_hour)
+
+  .df$alpha_sol <- res[,1]
+  .df$azimuth_sol <- res[,2]
+  
   .df
 }

@@ -4,10 +4,21 @@
 \alias{tidyISO52010}
 \title{Tidy version of the ISO 52010-1:2017 solar irradiance calculation}
 \usage{
-tidyISO52010(.df, lat, lng, tz, t_shift = NULL, surfaceAzimuths = c(180, 90,
-  0, -90), surfaceTilts = rep(90, length(surfaceAzimuths)), albedo = NULL,
-  interp_perez = 0, col_timestamp = "timestamp", col_G_dir = "G_dir",
-  col_G_dif = "G_dif", col_albedo = "albedo")
+tidyISO52010(
+  .df,
+  lat,
+  lng,
+  tz,
+  t_shift = NULL,
+  surfaceAzimuths = c(180, 90, 0, -90),
+  surfaceTilts = rep(90, length(surfaceAzimuths)),
+  albedo = NULL,
+  interp_perez = 0,
+  col_timestamp = "timestamp",
+  col_G_dir = "G_dir",
+  col_G_dif = "G_dif",
+  col_albedo = "albedo"
+)
 }
 \arguments{
 \item{.df}{Data frame that holds the solar irradiance data}
@@ -47,5 +58,5 @@ Set to 0 to use binned values, this follow the procedure of the ISO 52010-1:2017
 The inputed .df with additional columns of calculated solar irradiance
 }
 \description{
-adds columns n_day and n_hour to .df
+Tidy version of the ISO 52010-1:2017 solar irradiance calculation
 }

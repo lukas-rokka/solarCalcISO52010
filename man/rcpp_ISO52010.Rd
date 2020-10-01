@@ -4,8 +4,20 @@
 \alias{rcpp_ISO52010}
 \title{ISO 52010-1:2017 solar irradiance calculation}
 \usage{
-rcpp_ISO52010(lat, lng, tz, t_shift, surfaceAzimuths, surfaceTilts, n_hour,
-  n_day, G_dir, G_dif, albedo, interp_perez)
+rcpp_ISO52010(
+  lat,
+  lng,
+  tz,
+  t_shift,
+  surfaceAzimuths,
+  surfaceTilts,
+  n_hour,
+  n_day,
+  G_dir,
+  G_dif,
+  albedo,
+  interp_perez
+)
 }
 \arguments{
 \item{lat}{Latitude, in radians}
@@ -22,7 +34,7 @@ If the timestamp 12:00 refer to interval 11:45 - 12:00, use t_shift = 0.125.}
 
 \item{surfaceAzimuths}{Vector of surface azimuths, in radians}
 
-\item{surfaceTilts}{Vector of surface tilts, in radians. Need to be same lenght as surfaceAzimuths}
+\item{surfaceTilts}{Vector of surface tilts, in radians. Need to be same length as surfaceAzimuths}
 
 \item{n_hour}{Vector representing the hour of the day for every time step (double 0-24)}
 

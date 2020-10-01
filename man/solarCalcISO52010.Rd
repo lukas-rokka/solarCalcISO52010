@@ -3,7 +3,6 @@
 \docType{package}
 \name{solarCalcISO52010}
 \alias{solarCalcISO52010}
-\alias{solarCalcISO52010-package}
 \title{solarCalcISO52010}
 \description{
 Description of your package
