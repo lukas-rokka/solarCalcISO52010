@@ -114,7 +114,7 @@ NumericMatrix rcpp_ISO52010(double lat, double lng, double tz, double t_shift,
                             NumericVector albedo, int interp_perez) {
   
   // local meridian in rad. - for west & + for east of the prime meridian.
-
+  double PI = 3.1415927;
   int n = n_hour.size();
   int n_surfaces = surfaceAzimuths.size();
   NumericMatrix I_tot(n, n_surfaces*2 + 1);
@@ -310,6 +310,7 @@ NumericMatrix rcpp_ISO52010(double lat, double lng, double tz, double t_shift,
 NumericMatrix rcpp_ISO52010_angles(double lat, double lng, double tz, double t_shift, 
                                  NumericVector n_hour, NumericVector n_day) {
   
+  double PI = 3.1415927;
   // local meridian in rad. - for west & + for east of the prime meridian.
   
   int n = n_hour.size();
